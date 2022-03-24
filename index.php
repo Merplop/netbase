@@ -2,6 +2,14 @@
 
 <h1>Netbase Home</h1>
 
+<form action="postContent.php" method="post">
+	<label for="title">Title</label><br>
+	<input type="text" id="title" name="title"><br>
+	<label for="content">Post content:</label><br>
+	<input type="text" id="content" name="content"><br>
+	<input type="submit">
+</form>
+
 <?php
 $servername = "localhost";
 $username = 'netuser';
@@ -20,7 +28,7 @@ $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-                echo "id: " . $row["id"]. " - Name: " . $row["userId"]. " " . $row["postContent"]. " " . $row["createdDate"]. "<br>";
+                echo "Title: " . $row["title"]. " - Name: " . $row["userId"]. " " . $row["postContent"]. " " . $row["createdDate"]. "<br>";
         }
 } else {
         echo "0 results";
