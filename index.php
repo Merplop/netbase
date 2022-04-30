@@ -9,7 +9,7 @@
 
 <?php
 
-include_once ("logIn.php");
+include_once ("includes/dbHandler.inc.php");
 
 function getUID() {
 	$ip = $_SERVER['REMOTE_ADDR'];
