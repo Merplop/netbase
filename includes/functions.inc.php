@@ -12,7 +12,7 @@ function emptyInputSignup($name, $email, $uid, $pwd, $pwdConf) {
 
 function invalidUid($uid) {
 	$result;
-	if (preg_match("/^[a-zA-Z0-9]*$/")) {
+	if (!preg_match("/^[a-zA-Z0-9]*$/", $uid)) {
 		$result = true;
 	} else {
 		$result = false;
@@ -22,7 +22,7 @@ function invalidUid($uid) {
 
 function invalidEmail($email) {
 	$result;
-	if (!filter_var($email, FILTER_VALIDATE_EMAIL))) {
+	if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 		$result = true;
 	} else {
 		$result = false;
@@ -30,9 +30,9 @@ function invalidEmail($email) {
 	return $result;
 }
 
-function pwdMatch($pwd, $pwdConf) {
+function pwdNotMatch($pwd, $pwdConf) {
 	$result;
-	if ($pwd !== $pwdRepeat) {
+	if ($pwd !== $pwdConf) {
 		$result = true;
 	} else {
 		$result = false;
@@ -40,16 +40,16 @@ function pwdMatch($pwd, $pwdConf) {
 	return $result;
 }
 
-function uidExists($uid) {
+function uidExists($conn, $uid, $email) {
 	$sql = "select * from users where username = ? or email = ?;";
 	$stmt = mysqli_stmt_init($conn);
 	if (!mysqli_stmt_prepare($stmt, $sql)) {
 		header("location: ../signup.php?error=stmtfailed");
 		exit();
 	}
-	mysqli_stmt_bind_param($stmt, "ss");
+	mysqli_stmt_bind_param($stmt, "ss", $uid, $email);
 	mysqli_stmt_execute($stmt);
-	$resultData = mysqli_stmt_get_result();
+	$resultData = mysqli_stmt_get_result($stmt);
 
 	if ($row = mysqli_fetch_assoc($resultData)) {
 		return $row;
@@ -62,23 +62,53 @@ function uidExists($uid) {
 }
 
 function createUser($conn, $name, $email, $uid, $pwd) {
-	$sql = "insert into users (uid, ) values ();";
+	$ip = $_SERVER['REMOTE_ADDR'];
+	$sql = "insert into users (username, passwd, email, name) values (?, ?, ?, ?);";
 	$stmt = mysqli_stmt_init($conn);
 	if (!mysqli_stmt_prepare($stmt, $sql)) {
 		header("location: ../signup.php?error=stmtfailed");
 		exit();
 	}
-	mysqli_stmt_bind_param($stmt, "ss");
-	mysqli_stmt_execute($stmt);
-	$resultData = mysqli_stmt_get_result();
 
-	if ($row = mysqli_fetch_assoc($resultData)) {
-		return $row;
+	$hashedPwd = password_hash($pwd, PASSWORD_DEFAULT);
+
+	mysqli_stmt_bind_param($stmt, "ssss", $uid, $hashedPwd, $email, $name);
+	mysqli_stmt_execute($stmt);
+	mysqli_stmt_close($stmt);
+	header("location: ../userRegister.php?error=none");
+	exit();
+}
+
+function emptyInputLogin($username, $pwd) {
+	$result;
+	if (empty($username) || empty($pwd)) {
+		$result = true;
 	} else {
 		$result = false;
-		return $result;
+	}
+	return $result;
+}
+
+function loginUser($conn, $username, $pwd) {
+	$uidExists = uidExists($conn, $username, $username);
+
+	if ($uidExists === false) {
+		header("location: ../userLogIn.php?error=invalidlogin");
+		exit();
 	}
 
-	mysqli_stmt_close($stmt);
+	$pwdHash = $uidExists["passwd"];
+	$checkPwd = password_verify($pwd, $pwdHash);
+
+	if($checkPwd === false) {
+		header("location: ../userLogIn.php?error=invalidlogin");
+		exit();
+	} else if ($checkPwd === true) {
+		session_start();
+		$_SESSION["uid"] = $uidExists["uid"];
+		header("location: ../index.php");
+		exit();
+	}
 }
+
 
