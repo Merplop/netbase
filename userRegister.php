@@ -2,36 +2,37 @@
 	include_once 'header.php';
 ?>
 
-<h3>Register</h3>
 
-<form>
-<label for="username">Username</label><br>
-<textarea name="username"></textarea><br>
-<label for="password">Password</label><br>
-<textarea name="passwordPost"></textarea><br>
-<input type=submit value="Register">
-</form>
+<section class="signup-form">
+	<h3>Register</h3>
+	<form action="includes/signUp.inc.php" method="post"><br>
+		<input type="text" name="name" placeholder="Full Name:"><br>
+		<input type="text" name="email" placeholder="Email:"><br>
+		<input type="text" name="uid" placeholder="Username:"><br>
+		<input type="password" name="pwd" placeholder="Password:"><br>
+		<input type="password" name="pwdConf" placeholder="Confirm Password:"><br>
+		<button type="submit" name="submit">Register</button>
+	</form>
+	<?php
 
-<?php
-
-	if($_REQUEST['username'] and $_REQUEST['passwordPost']) {
-
-		$username = $_REQUEST['username'];
-		$password = password_hash($_REQUEST['passwordPost'], PASSWORD_DEFAULT);
-
-		include_once ("logIn.php");
-
-		$ip = $_SERVER['REMOTE_ADDR'];
-
-		$sql = "insert into users (ip, username, passwd) values ($ip, '$username', $password)";
-
-		$result = logIn($sql); 
-
-		header("Location = localhost/index.php");
-		exit();
+if (isset($_GET["error"])) {
+	if ($_GET["error"] == "emptyinput") {
+		echo "<p>Field empty</p>";
+	} else if ($_GET["error"] == "invaliduid") {
+		echo "<p>Invalid username</p>";
+	} else if ($_GET["error"] == "invalidemail") {
+		echo "<p>Invalid email</p>";
+	} else if ($_GET["error"] == "pwdnotmatch") {
+		echo "<p>Passwords don't match</p>";
+	} else if ($_GET["error"] == "uidexists") {
+		echo "<p>Username already taken</p>";
+	} else if ($_GET["error"] == "none") {
+		echo "<p>Sign up successful</p>";
 	}
+}
 
 ?>
+</section>
 
 </body>
 </html>
