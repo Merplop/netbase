@@ -6,7 +6,14 @@ if (isset($_POST["submit"])) {
 	$email = $_POST["email"];
 	$uid = $_POST["uid"];
 	$pwd = $_POST["pwd"];
-	$pwdConf = $_POST["pwdConf"]
+	$pwdConf = $_POST["pwdConf"];
+
+	$serverName = "localhost";
+	$dbUsername = "netuser";
+	$dbPassword = "darthgamer";
+	$dbName = "netbase";
+
+	$conn = mysqli_connect($serverName, $dbUsername, $dbPassword, $dbName);
 
 	require_once 'dbHandler.inc.php';
 	require_once 'functions.inc.php';
@@ -27,7 +34,7 @@ if (isset($_POST["submit"])) {
 		header("location: ../userRegister.php?error=pwdnotmatch");
 		exit();
 	}
-	if(uidExists($conn, $username) !== false) {
+	if(uidExists($conn, $uid, $email) !== false) {
 		header("location: ../userRegister.php?error=uidexists");
 		exit();
 	}
