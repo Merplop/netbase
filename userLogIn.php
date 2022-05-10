@@ -13,8 +13,10 @@
 	<?php
 
 if (isset($_GET["error"])) {
-	if ($_GET["error"] == "emptyinput") {
+	if ($_GET["error"] == "emptyInputLogin") {
 		echo "<p>Field empty</p>";
+	} else if ($_GET["error"] == "invalidlogin") {
+		echo "<p>Invalid login</p>";
 	}
 }
 
