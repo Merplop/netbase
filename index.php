@@ -20,12 +20,21 @@ function getUID() {
 	return $uid;
 }
 
+function getUsername($uid) {
+	$username = getSingle("select username from users where uid = '".$uid."'");
+	return $username;
+}
+
 if($_REQUEST['cpost']) {
-	$postContent = $_REQUEST['cpost'];
-	$ip = $_SERVER['REMOTE_ADDR'];
-	$uid = getUID();
-	$date = Date("Y-m-d H:i:s");
-	logIn("insert into posts (uid, post, date) values($uid, '$postContent', '$date')");
+	if (!isset($_SESSION["uid"])) {
+		echo "<p>Please log in to post</p>";
+	} else {
+		$postContent = $_REQUEST['cpost'];
+		$uid = $_SESSION["uid"];
+		$date = Date("Y-m-d H:i:s");
+		logIn("insert into posts (uid, post, date) values($uid, '$postContent', '$date')");
+		header("location: index.php");
+	} 
 }
 
 function getSingle($query) {
@@ -45,9 +54,10 @@ if($_REQUEST['follow']) {
 <?php
 
 $result = logIn("select * from posts order by date desc");
-print "<table border=1>";
+print "<table border=0>";
 while ($row = mysqli_fetch_assoc($result)) {
 	$uid = $row['uid'];
+	$username = getUsername($uid);
 	$postContent = htmlspecialchars($row['post']);
 	$date = $row['date'];
 
@@ -55,8 +65,8 @@ while ($row = mysqli_fetch_assoc($result)) {
 	<a href=index.php?follow=$uid>Follow</a>
 	EOF;
 	print <<<EOF
-
-	<tr><td>$uid</td><td>$postContent</td><td>$date</td><td>$follow</td></tr>
+	<tr><td><b>$username</td></b>
+	<td>$postContent</td><td>$date</td><td>$follow</td></tr>
 	EOF;
 
 }
