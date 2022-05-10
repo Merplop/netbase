@@ -106,9 +106,10 @@ function loginUser($conn, $username, $pwd) {
 	} else if ($checkPwd === true) {
 		session_start();
 		$_SESSION["uid"] = $uidExists["uid"];
+		$_SESSION["username"] = $uidExists["username"];
 		header("location: ../index.php");
+		echo "<p>Login successful</p>";
 		exit();
 	}
 }
-
 
