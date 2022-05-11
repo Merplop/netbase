@@ -11,21 +11,12 @@
 
 include_once ("includes/dbHandler.inc.php");
 
-function getUID() {
-	$ip = $_SERVER['REMOTE_ADDR'];
-	$uid = getSingle("select uid from users where ip = '".$ip."'");
-		if(!$uid) {
-			logIn("insert into users(ip) values ('$ip')");
-	}
-	return $uid;
-}
-
 function getUsername($uid) {
 	$username = getSingle("select username from users where uid = '".$uid."'");
 	return $username;
 }
 
-if($_REQUEST['cpost']) {
+if(isset($_REQUEST['cpost']) and $_REQUEST['cpost']) {
 	if (!isset($_SESSION["uid"])) {
 		echo "<p>Please log in to post</p>";
 	} else {
@@ -43,10 +34,14 @@ function getSingle($query) {
 	return $row[0];
 }
 
-if($_REQUEST['follow']) {
-	$follow = $_REQUEST['follow'];
-	$uid = getUID();
-	logIn("insert ignore into follows(uid, follower) values ($uid, $follow)");
+if(isset($_REQUEST['follow']) and $_REQUEST['follow']) {
+	if (isset($_SESSION["uid"])) {
+		$follow = $_REQUEST['follow'];
+		$uid = $_SESSION["uid"];
+		logIn("insert ignore into follows(uid, follower) values ($uid, $follow)");
+	} else {
+		echo "<p>Please log in to follow</p>";
+	}
 }
 
 ?> 
@@ -54,23 +49,31 @@ if($_REQUEST['follow']) {
 <?php
 
 $result = logIn("select * from posts order by date desc");
-print "<table border=0>";
 while ($row = mysqli_fetch_assoc($result)) {
 	$uid = $row['uid'];
 	$username = getUsername($uid);
 	$postContent = htmlspecialchars($row['post']);
 	$date = $row['date'];
 
-	$follow = <<<EOF
-	<a href=index.php?follow=$uid>Follow</a>
-	EOF;
+	if (isset($_SESSION["uid"])) {
+		$currentUID = $_SESSION["uid"];
+		if (getSingle("select follower from follows where uid=$uid and follower=$currentUID")) {
+			$follow = <<<EOF
+			<a href=index.php?follow=$uid>Follow</a>
+			EOF;
+		} else {
+			$follow = "Followed.";
+		}
+	} else {
+		$follow = "";
+	}
+
 	print <<<EOF
-	<tr><td><b>$username</td></b>
-	<td>$postContent</td><td>$date</td><td>$follow</td></tr>
+	<h4>$username</h4>
+	<p>$postContent</p><br><p>$follow</td></tr><p><i><font size="-2">$date</font></i></p><br>
 	EOF;
 
 }
-print "</table>";
 
 if ($result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
