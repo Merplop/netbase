@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Nanum+Gothic&display=swap');
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	background-color: #2A2A2A;
+}
+
+p, table, h2, h3 {
+	color: #FFFFFF;
+	align-items: center;
+}
+
+h4 {
+	color: #AFF1E0;
+}
+
+.center {
+	margin-left: auto;
+	margin-right: auto;
+}
+
+li, a, button {
+	font-family: montserrat;
+	font-weight: 400;
+	font-size: 16px;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+
+header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 30px 10%;
+}
+
+.nav__links {
+	list-style: none;
+}
+
+.nav__links li {
+	display: inline-block;
+	padding: 0px 20px;
+}
+
+.nav__links li a {
+	transition: all 0.3s ease 0s;
+}
+
+.nav__links li a:hover {
+	color: #0088a9;
+}
+
+button {
+	padding: 9px 25px;
+	background-color: rgba(0,136,169,1);
+	border: none;
+	border-radius: 50px;
+	cursor: pointer;
+	transition: all 0.3s ease 0s;
+}
+
+button:hover {
+	background-color: rgba(0,136,169,0.8);
+}
+
+body {
+	font-family: montserrat;
+	text-align: center;
+}
+
+h1 {
+	color: #00FFBD;
+}
+
+
